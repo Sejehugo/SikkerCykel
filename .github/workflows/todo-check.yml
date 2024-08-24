@@ -1,0 +1,27 @@
+name: Check TODOs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  todo-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Search for TODO comments
+      run: |
+        # Find TODOs in the codebase
+        if grep -r --include=\*.{js,ts,py,java,rb,sh,go,cpp,html,css} "TODO" .; then
+          echo "TODOs found. Please address them before committing."
+          exit 1
+        else
+          echo "No TODOs found. All good!"
+        fi
