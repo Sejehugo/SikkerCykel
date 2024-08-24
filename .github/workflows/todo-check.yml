@@ -1,11 +1,11 @@
-name: Check for TODOs in Pull Requests
+name: Check for TODO comments
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]  # Trigger workflow when a PR is opened, updated, or reopened
+    types: [opened, synchronize, reopened]
 
 jobs:
-  check-todos:
+  todo-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,7 +15,7 @@ jobs:
     - name: Search for TODO comments
       run: |
         # Find TODOs in the codebase
-        if grep -r --include=\*.{js,ts,py,java,rb,sh,go,cpp,html,css} "TODO" .; then
+        if grep -r --include=\*.cs "TODO" .; then
           echo "TODOs found. Please address them before merging."
           exit 1
         else
