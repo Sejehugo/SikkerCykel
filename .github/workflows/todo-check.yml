@@ -1,23 +1,14 @@
-name: Check TODOs
+name: Check for TODOs in Pull Requests
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
+    types: [opened, synchronize, reopened]  # Trigger workflow when a PR is opened, updated, or reopened
 
 jobs:
-  todo-check:
+  check-todos:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set up Node.js 20
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-    
     - name: Checkout code
       uses: actions/checkout@v3
 
@@ -25,7 +16,7 @@ jobs:
       run: |
         # Find TODOs in the codebase
         if grep -r --include=\*.{js,ts,py,java,rb,sh,go,cpp,html,css} "TODO" .; then
-          echo "TODOs found. Please address them before committing."
+          echo "TODOs found. Please address them before merging."
           exit 1
         else
           echo "No TODOs found. All good!"
