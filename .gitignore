@@ -1,0 +1,30 @@
+# Ignore .NET generated files
+bin/
+obj/
+*.swp
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignore secrets
+secrets.json
+
+# Ignore local settings
+local.settings.json
+
+# Ignore build results
+*.dll
+*.exe
+*.so
+*.dylib
+*.log
+
+# Ignore package files
+*.nupkg
+*.snupkg
+
+# Ignore VS Code settings
+.vs/
+.vscode/
+Cykelsikkerhed-backend/Properties/launchSettings.json
+.vs/Cykelsikkerhed-backend/FileContentIndex/9f1a2752-21d6-4d8d-94bc-fbef1d0e7a23.vsidx
