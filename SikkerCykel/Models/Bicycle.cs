@@ -1,6 +1,6 @@
 ﻿namespace SikkerCykel.Models
 {
-    // TODO: Talk with Nina about this model!
+    // TODO: Talk with Nina about this model
     public class Bicycle 
     {
         public string Id { get; set; } = string.Empty;
