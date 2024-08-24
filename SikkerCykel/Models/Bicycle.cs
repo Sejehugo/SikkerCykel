@@ -1,6 +1,6 @@
 ﻿namespace SikkerCykel.Models
 {
-    public class Bicycle //TODO: Talk with Nina about this model!
+    public class Bicycle // TODO: Talk with Nina about this model!
     {
         public string Id { get; set; } = string.Empty;
         public string Brand { get; set; } // Mærket af cyklen
