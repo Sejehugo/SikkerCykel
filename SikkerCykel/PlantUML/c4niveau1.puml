@@ -1,0 +1,65 @@
+@startuml
+set separator none
+title SikkerCykel System - System Context
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+hide stereotype
+
+skinparam person<<Admin>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<AnonymousUser>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam rectangle<<ExternalSystem>> {
+  BackgroundColor #1168bd
+  FontColor #ffffff
+  BorderColor #0b4884
+  shadowing false
+}
+skinparam rectangle<<SikkerCykelSystem>> {
+  BackgroundColor #1168bd
+  FontColor #ffffff
+  BorderColor #0b4884
+  shadowing false
+}
+skinparam person<<User>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+
+person "==User\n<size:10>[Person]</size>\n\nA user of SikkerCykel app\nRegisters bikes, updates profiles, receives notifications" <<User>> as User
+person "==Admin\n<size:10>[Person]</size>\n\nAn elevated user of SikkerCykel app\nManages system operations, verifies ownership" <<Admin>> as Admin
+person "==Anonymous User\n<size:10>[Person]</size>\n\nA user without a login\nCan scan NFC tags for bicycle status" <<AnonymousUser>> as AnonymousUser
+
+rectangle "==SikkerCykel System\n<size:10>[Software System]</size>\n\nHolds bicycle and user information\nProvides core system functions like notifications and ownership verification" <<SikkerCykelSystem>> as SikkerCykelSystem
+
+rectangle "==Email System [External]\n<size:10>[External System]</size>\n\nAn external service that sends emails to users\nHandles system-generated emails such as notifications, verification, and password recovery" <<ExternalSystem>> as Email
+
+rectangle "==Firebase Notification System [External]\n<size:10>[External System]</size>\n\nAn external notification service powered by Firebase\nSends push notifications to users about bicycle status and ownership events" <<ExternalSystem>> as Firebase
+
+rectangle "==NFC-chip embedded in a sticker\n<size:10>[Hardware]</size>\n\nStores a unique ID readable by the system for bicycle identification\nAllows identification of the bicycle via NFC scanning" <<ExternalSystem>> as NFCchipinbeddedinasticker
+
+AnonymousUser .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Scans NFC tag"
+Admin .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Manages"
+SikkerCykelSystem .[#707070,thickness=2].> Email : "<color:#707070>Sends emails using external email system"
+SikkerCykelSystem .[#707070,thickness=2].> Firebase : "<color:#707070>Sends notifications using Firebase"
+SikkerCykelSystem .[#707070,thickness=2].> NFCchipinbeddedinasticker : "<color:#707070>Reads NFC chip for bicycle identification"
+User .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Uses"
+@enduml
