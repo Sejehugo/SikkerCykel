@@ -1,0 +1,65 @@
+@startuml
+set separator none
+title SikkerCykel System - Systemkontekst
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+hide stereotype
+
+skinparam person<<Admin>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<AnonymousUser>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam rectangle<<ExternalSystem>> {
+  BackgroundColor #1168bd
+  FontColor #ffffff
+  BorderColor #0b4884
+  shadowing false
+}
+skinparam rectangle<<SikkerCykelSystem>> {
+  BackgroundColor #1168bd
+  FontColor #ffffff
+  BorderColor #0b4884
+  shadowing false
+}
+skinparam person<<User>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+
+person "==Bruger\n<size:10>[Person]</size>\n\nEn bruger af SikkerCykel app'en\nRegistrerer cykler, opdaterer profiler, modtager notifikationer" <<User>> as Bruger
+person "==Admin\n<size:10>[Person]</size>\n\nEn forhøjet bruger af SikkerCykel app'en\nAdministrerer systemoperationer, verificerer ejerskab" <<Admin>> as Admin
+person "==Anonym Bruger\n<size:10>[Person]</size>\n\nEn bruger uden login\nKan scanne NFC-tags for cykelstatus" <<AnonymousUser>> as AnonymBruger
+
+rectangle "==SikkerCykel System\n<size:10>[Software System]</size>\n\nOpbevarer cykel- og brugeroplysninger\nTilbyder kernefunktioner som notifikationer og ejerskabsverifikation" <<SikkerCykelSystem>> as SikkerCykelSystem
+
+rectangle "==Emailsystem [Eksternt]\n<size:10>[Eksternt System]</size>\n\nEn ekstern service der sender emails til brugere\nHåndterer systemgenererede emails som notifikationer, verifikation og nulstilling af adgangskoder" <<ExternalSystem>> as Email
+
+rectangle "==Firebase Notifikationssystem [Eksternt]\n<size:10>[Eksternt System]</size>\n\nEn ekstern notifikationstjeneste drevet af Firebase\nSender push-notifikationer til brugere om cykelstatus og ejerskabshændelser" <<ExternalSystem>> as Firebase
+
+rectangle "==NFC-chip indlejret i et klistermærke\n<size:10>[Hardware]</size>\n\nGemmer en unik ID, som kan læses af systemet for cykelidentifikation\nMuliggør identifikation af cyklen via NFC-scanning" <<ExternalSystem>> as NFCchipindlejretiKlistermaerke
+
+AnonymBruger .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Scanner NFC-tag"
+Admin .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Administrerer"
+SikkerCykelSystem .[#707070,thickness=2].> Email : "<color:#707070>Sender emails ved hjælp af eksternt emailsystem"
+SikkerCykelSystem .[#707070,thickness=2].> Firebase : "<color:#707070>Sender notifikationer ved hjælp af Firebase"
+SikkerCykelSystem .[#707070,thickness=2].> NFCchipindlejretiKlistermaerke : "<color:#707070>Læser NFC-chip for cykelidentifikation"
+Bruger .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Anvender"
+@enduml
