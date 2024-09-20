@@ -1,0 +1,104 @@
+@startuml
+set separator none
+title [Systemkontekst] SikkerCykel System
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+hide stereotype
+
+skinparam person<<SystemAdminstrator>> {
+  BackgroundColor #lightgrey
+  FontColor #black
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<AnonymousUser>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam rectangle<<ExternalSystem>> {
+  BackgroundColor #1168bd
+  FontColor #ffffff
+  BorderColor #0b4884
+  shadowing false
+}
+skinparam rectangle<<SikkerCykelSystem>> {
+  BackgroundColor #1168bd
+  FontColor #ffffff
+  BorderColor #0b4884
+  shadowing false
+}
+skinparam person<<User>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<PoliceOfficer>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<BicycleImporter>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<BicycleDealer>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+
+' Grå bokse til Emailsystem, Firebase, Google Login og NFC-chip
+skinparam rectangle<<GrayBox>> {
+  BackgroundColor #707070
+  FontColor #ffffff
+  BorderColor #505050
+  shadowing false
+}
+
+person "==Bruger\n<size:10>[Person]</size>\n\nEn bruger af SikkerCykel app'en. Har ejerskabsbevis over sine cykler." <<User>> as Bruger
+' person "==Anonym Bruger\n<size:10>[Person]</size>\n\nEn bruger uden login. \nKan scanne NFC-tags for cykelstatus" <<AnonymousUser>> as AnonymBruger
+' person "==Politibetjent\n<size:10>[Person]</size>\n\nPolitiet tjekker status for stjålne cykler." <<PoliceOfficer>> as PolitiBetjent
+' person "==Cykel importør\n<size:10>[Person]</size>\n\nCykelimportører registrerer sig som førstegangs ejer af cykler i systemet. Indtaster de oprindelige oplysninger for cykler." <<BicycleImporter>> as Cykelimportoer
+' person "==Cykelforhandler\n<size:10>[Person]</size>\n\nCykelforhandlere modtager og videregiver ejerskab af cykler." <<BicycleDealer>> as CykelForhandler
+' person "==System adminstrator\n<size:10>[Person]</size>\n\nEn forhøjet bruger af SikkerCykel app'en.\nAdministrerer fejlrapportering" <<SystemAdminstrator>> as SystemAdminstrator
+
+rectangle "==SikkerCykel System\n<size:10>[Software System]</size>\n\nOpbevarer cykel- og brugeroplysninger.\nTilbyder kernefunktioner relaterede til dette." <<SikkerCykelSystem>> as SikkerCykelSystem
+rectangle "==Emailsystem\n<size:10>[Software System]</size>\n\nSender emails til brugere.\nHåndterer systemgenererede emails som verifikation af ejerskab og nulstilling af adgangskoder" <<GrayBox>> as Email
+rectangle "==Notifikationssystem\n<size:10>[Software System]</size>\n\nHåndterer notifikationer til brugere om cykelstatus, ejerskabshændelser etc." <<GrayBox>> as Notifikation
+rectangle "==Authentication\n<size:10>[Software system]</size>\n\nHåndterer brugergodkendelse via email og tredjepartsudbydere" <<GrayBox>> as Authentication
+rectangle "==NFC-tag\n<size:10>[Hardware]</size>\n\nGemmer data, som kan læses af systemet.\nMuliggør identifikation af cyklen via NFC-scanning" <<GrayBox>> as NFCchipindlejretiKlistermaerke
+rectangle "==MitID\n<size:10>[Software system]</size>\n\nBeviser brugeren er, hvem de udgiver sig for at være.\nMuliggør identifikation af cyklen via NFC-scanning" <<GrayBox>> as MitID
+
+SikkerCykelSystem .[#707070,thickness=2].> Authentication : "<color:#707070>Autentificerer"
+
+Bruger .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Anvender"
+
+' AnonymBruger .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Anvender"
+' PolitiBetjent .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Anvender"
+' CykelForhandler .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Anvender"
+' Cykelimportoer .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Anvender"
+' SystemAdminstrator .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070>Administrerer"
+SikkerCykelSystem .[#707070,thickness=2].> Email : "<color:#707070>Bruger"
+SikkerCykelSystem .[#707070,thickness=2].> Notifikation : "<color:#707070>Bruger"
+SikkerCykelSystem .[#707070,thickness=2].> NFCchipindlejretiKlistermaerke : "<color:#707070>Læser"
+SikkerCykelSystem .[#707070,thickness=2].> MitID : "<color:#707070>Bruger"
+Email .[#707070,thickness=2].> Bruger: "<color:#707070>Sender e-mails"
+Notifikation .[#707070,thickness=2].> Bruger: "<color:#707070>Sender notifikationer"
+
+
+@enduml

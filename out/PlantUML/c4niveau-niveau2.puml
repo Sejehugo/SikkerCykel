@@ -1,0 +1,104 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Container diagram for SikkerCykel System
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+hide stereotype
+
+skinparam person<<SystemAdminstrator>> {
+  BackgroundColor #lightgrey
+  FontColor #black
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<AnonymousUser>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam rectangle<<ExternalSystem>> {
+  BackgroundColor #1168bd
+  FontColor #ffffff
+  BorderColor #0b4884
+  shadowing false
+}
+skinparam rectangle<<SikkerCykelSystem>> {
+  BackgroundColor #1168bd
+  FontColor #ffffff
+  BorderColor #0b4884
+  shadowing false
+}
+skinparam person<<User>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<PoliceOfficer>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<BicycleImporter>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<BicycleDealer>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+
+' ' Grå bokse til Emailsystem, Firebase, Google Login og NFC-chip
+skinparam rectangle<<GrayBox>> {
+  BackgroundColor #707070
+  FontColor #ffffff
+  BorderColor #505050
+  shadowing false
+}
+
+person "==Bruger\n<size:10>[Person]</size>\n\nEn bruger af SikkerCykel app'en. Adminstrerer sine cykler." <<User>> as Bruger
+
+System_Boundary(c1, "SikkerCykel System") {
+    Container(app, "SikkerCykel App", "", "Leverer funktionalitet til registrering, sporing og administration af cykler via mobil/web app")
+    Container(api, "SikkerCykel API", "", "Håndterer al kommunikation mellem klienten og systemets backend via JSON/HTTPS")
+    ContainerDb(database, "SikkerCykel Database", "", "Gemmer cykeldata, brugerkonti, ejerskabsposter og rapporterede stjålne cykler")
+}
+
+' ' Eksterne systemer til venstre
+rectangle "==Emailsystem\n<size:10>[Software System]</size>\n\nSender emails til brugere.\nHåndterer systemgenererede emails som verifikation af ejerskab og nulstilling af adgangskoder" <<GrayBox>> as Email
+rectangle "==Authentication\n<size:10>[Software system]</size>\n\nHåndterer brugergodkendelse via email og tredjepartsudbydere" <<GrayBox>> as Authentication
+
+' ' Eksterne systemer til højre
+rectangle "==Notifikationssystem\n<size:10>[Software System]</size>\n\nHåndterer notifikationer til brugere om cykelstatus, ejerskabshændelser etc." <<GrayBox>> as Notifikation
+rectangle "==NFC-tag\n<size:10>[Hardware]</size>\n\nGemmer data, som kan læses af systemet.\nMuliggør identifikation af cyklen via NFC-scanning" <<GrayBox>> as NFCchipindlejretiKlistermaerke
+rectangle "==MitID\n<size:10>[Software system]</size>\n\nBeviser brugeren er, hvem de udgiver sig for at være.\nMuliggør identifikation af cyklen via NFC-scanning" <<GrayBox>> as MitID
+
+' ' Relationer mellem brugere og systemet
+Rel(Bruger, app, "Bruger app'en til at administrere cykler")
+
+' ' Relationer indenfor systemet
+' [app] -d-> [api] : JSON/HTTPS
+Rel(app, api, "Sender anmodninger via", "JSON/HTTPS")
+Rel(api, database, "Henter data fra")
+Rel(api, Notifikation, "Sender notifikationer via")
+Rel(api, Authentication, "Bruger til login")
+Rel(api, NFCchipindlejretiKlistermaerke, "Bruger til scanning")
+Rel(api, MitID, "Bruger til identifikation")
+Rel(api, Email, "Sender emails via")
+
+@enduml
