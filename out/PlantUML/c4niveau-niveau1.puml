@@ -1,4 +1,4 @@
-@startuml
+@startuml c4niveau2
 set separator none
 title [Systemkontekst] SikkerCykel System
 
