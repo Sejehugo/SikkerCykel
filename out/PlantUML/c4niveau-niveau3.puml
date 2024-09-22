@@ -1,0 +1,54 @@
+@startuml test
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component Diagram for SikkerCykel App
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+' ' Aktør "Bruger" fra container diagrammet
+Person(user, "Bruger", "En bruger af SikkerCykel Appen")
+
+System_Boundary(c1, "SikkerCykel App") {
+
+    Component(ui, "Brugergrænseflade (UI)", "Mobile", "Grænseflade for bruger til at administrere cykler")
+    Component(controller, "CykelController", "Controller", "Håndterer input fra UI og sender anmodninger til API")
+    Component(service, "CykelService", "Service", "Forretningslogik til at registrere, spore og administrere cykler")
+    Component(nfc, "NFC Scanner", "Komponent", "Interagerer med NFC tags for at identificere cykler")
+    Component(email, "EmailService", "Service", "Sender emails til brugere ved ejerskabshændelser")
+    Component(notification, "NotificationService", "Service", "Håndterer push-notifikationer om cykelstatus")
+
+    ContainerDb(database, "SikkerCykel Database", "SQL Database", "Gemmer cykeldata, brugerkonti og ejerskabsposter")
+
+}
+
+' ' Eksterne systemer
+Component_Ext(email_ext, "Emailsystem", "Eksternt system", "Sender systemgenererede emails")
+Component_Ext(notification_ext, "Notifikationssystem", "Eksternt system", "Håndterer notifikationer til brugere")
+Component_Ext(auth_ext, "Authentication", "Eksternt system", "Håndterer brugergodkendelse")
+Component_Ext(nfc_ext, "NFC-tag", "Hardware", "NFC-klistermærke til cykelidentifikation")
+Component_Ext(mitid_ext, "MitID", "Eksternt system", "Brugergodkendelse for at sikre brugerens identitet")
+
+' ' Relationer mellem komponenter i appen
+Rel(user, ui, "Interagerer med via mobil eller web")
+Rel(ui, controller, "Sender input til")
+Rel(controller, service, "Kalder forretningslogik")
+Rel(service, database, "Læser/skriv cykeldata fra/til")
+Rel(service, nfc, "Interagerer med for scanning")
+Rel(service, email, "Sender ejerskabsmails via")
+Rel(service, notification, "Sender push-notifikationer via")
+
+' ' Eksterne relationer
+Rel(email, email_ext, "Sender emails via")
+Rel(notification, notification_ext, "Sender notifikationer via")
+Rel(service, auth_ext, "Bruger til godkendelse")
+Rel(nfc, nfc_ext, "Læser data fra NFC-tags")
+Rel(auth_ext, mitid_ext, "MitID til bruger godkendelse")
+
+@enduml
