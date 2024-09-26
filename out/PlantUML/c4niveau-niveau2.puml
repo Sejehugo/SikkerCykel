@@ -1,7 +1,7 @@
-@startuml test
+@startuml c4niveau-niveau2-bruger
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-title Container diagram for SikkerCykel System
+title [Container diagram] for SikkerCykel System
 
 top to bottom direction
 
@@ -71,31 +71,29 @@ skinparam rectangle<<GrayBox>> {
   shadowing false
 }
 
-person "==Bruger\n<size:10>[Person]</size>\n\nEn bruger af SikkerCykel app'en. Adminstrerer sine cykler." <<User>> as Bruger
+person "==Bruger\n<size:10>[Person]</size>\n\nEn bruger af SikkerCykel app'en. Har ejerskabsbevis over sine cykler." <<User>> as Bruger
 
 System_Boundary(c1, "SikkerCykel System") {
-    Container(app, "SikkerCykel App", "", "Leverer funktionalitet til registrering, sporing og administration af cykler via mobil/web app")
-    Container(api, "SikkerCykel API", "", "Håndterer al kommunikation mellem klienten og systemets backend via JSON/HTTPS")
-    ContainerDb(database, "SikkerCykel Database", "", "Gemmer cykeldata og dertilhørende ejerskab")
+    Container(app, "SikkerCykel App", "", "Leverer funktionalitet til registrering og administration af cykler via mobil app")
+    Container(api, "SikkerCykel API", "", "Håndterer al kommunikation mellem klienten og systemets database via JSON/HTTPS")
+    ContainerDb(database, "SikkerCykel Database", "", "Gemmer cykeldata og dertilhørende ejerskabsbevis")
 }
 
 ' ' Eksterne systemer til venstre
-rectangle "==Emailsystem\n<size:10>[Software System]</size>\n\nSender emails til brugere.\nHåndterer systemgenererede emails om nulstilling af adgangskoder" <<GrayBox>> as Email
-rectangle "==Authentication\n<size:10>[Software system]</size>\n\nHåndterer brugergodkendelse via email og tredjepartsudbydere" <<GrayBox>> as Authentication
+rectangle "==Emailsystem\n<size:10>[Software System]</size>\n\nSender emails til brugere.\nHåndterer systemgenererede emails som nulstilling af adgangskoder" <<GrayBox>> as Email
+rectangle "==Authentication\n<size:10>[Software system]</size>\n\nHåndterer brugergodkendelse via email og tredjepartsudbydere, såsom Google og MitID" <<GrayBox>> as Authentication
 
 ' ' Eksterne systemer til højre
-rectangle "==Notifikationssystem\n<size:10>[Software System]</size>\n\nHåndterer notifikationer til brugere om cykelstatus etc." <<GrayBox>> as Notifikation
-rectangle "==NFC-tag\n<size:10>[Hardware]</size>\n\nGemmer data, som kan læses af systemet.\nMuliggør identifikation af cyklen via NFC-scanning" <<GrayBox>> as NFCchipindlejretiKlistermaerke
-rectangle "==MitID\n<size:10>[Software system]</size>\n\nBeviser brugeren er, hvem de udgiver sig for at være." <<GrayBox>> as MitID
+rectangle "==Notifikationssystem\n<size:10>[Software System]</size>\n\nHåndterer notifikationer til brugere om cykelstatus, ejerskabshændelser etc." <<GrayBox>> as Notifikation
+rectangle "==QR-kode\n<size:10>[Identification]</size>\n\nGemmer data, som kan læses af systemet.\nMuliggør identifikation af cyklen via QR-scanning" <<GrayBox>> as QRKodeIngraveretICykel
 
 ' ' Relationer mellem brugere og systemet
-Rel(Bruger, app, "Bruger app'en til at administrere cykler")
-app --> api: "Sender anmodninger via\n[JSON/HTTPS]"
-api --> Notifikation: "Sender notifikationer via"
-api --> Authentication: "Bruger til login"
-api -left-> database: "Henter data fra"
-api --> NFCchipindlejretiKlistermaerke : "Bruger til scanning"
-api --> MitID: "Bruger til identifikation"
-api --> Email: "Sender e-mails via"
+Bruger ..> app: " Administrere cykler via"
+app ..> api: " Sender anmodninger via\n[JSON/HTTPS]"
+api ..> Notifikation: " Sender notifikationer via"
+api ..> Authentication: " Authentificerer brugeren via"
+api .left.> database: " Henter data fra"
+api ..> QRKodeIngraveretICykel: " Læser data fra"
+api ..> Email: " Sender e-mails via"
 
 @enduml
