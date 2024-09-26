@@ -1,4 +1,4 @@
-@startuml test
+@startuml c4niveau-niveau3-backend
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
 title Component Diagram for SikkerCykel App
