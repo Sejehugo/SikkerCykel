@@ -1,0 +1,86 @@
+@startuml c4-niveau3-app
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component Diagram for SikkerCykel App
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 15
+  defaultTextAlignment center
+  wrapWidth 180
+  maxMessageSize 100
+}
+
+' ' Aktør "Bruger" fra container diagrammet
+Person(user, "Bruger", "En bruger af SikkerCykel app'en. Har ejerskabsbevis over sine cykler.")
+
+System_Boundary(c1, "SikkerCykel App") {
+
+    Component(login, "Login Screen", "Widget", "Brugerens login-skærm")
+    Component(register, "Register Screen", "Widget", "Brugerens registreringsskærm")
+    Component(settings, "Settings Screen", "Widget", "Brugerens indstillinger")
+    Component(bikeDetails, "Bike Details Screen", "Widget", "Detaljer om en cykel, og dertilhørende handlinger om cyklen")
+    Component(bikeModel, "Bike Model", "Data class", "Dataklasse for cykelmodel")
+    Component(certificate, "Bike Certificate", "Data class", "Dataklasse for ejerskabsbevis")
+    Component(userId, "User ID", "Data class", "Dataklasse for brugerens unikke ID")
+    Component(authController, "Auth Controller", "Controller", "Håndterer login, registrering og brugergodkendelse")
+    Component(authRepository, "Auth Repository", "Repository", "Håndterer API kald til firebase authentication")
+    Component(bikeController, "Bike Controller", "Controller", "Håndterer cykeldata og ejerskabsbevis")
+    Component(bikeRepository, "Bike Repository", "Repository", "Håndterer API kald til backend")
+    Component(notificationController, "Notification Controller", "Controller", "Håndterer notifikationer til brugeren")
+    Component(notificationRepository, "Notification Repository", "Repository", "Håndterer API kald til Firebase Cloud Messaging")
+    Component(emailController, "Email Controller", "Controller", "Håndterer emails")
+    Component(emailRepository, "Email Repository", "Repository", "Håndterer API kald til backends emailsystem")
+    Component(mitidController, "MitID Controller", "Controller", "Håndterer brugergodkendelse via MitID")
+    Component(mitidRepository, "MitID Repository", "Repository", "Håndterer API kald til MitID systemet")
+    Component(bikeCertificate, "Bike Certificate Screen", "Widget", "Skærm til visning af ejerskabsbeviser")
+    Component(transferOwnsership, "Transfer Ownership Screen", "Widget", "Skærm til overførsel af ejerskab")
+    Component(recieveOwnership, "Recieve Ownership Screen", "Widget", "Skærm til modtagelse af ejerskab")
+    Component(certificateController, "Certificate Controller", "Controller", "Håndterer ejerskabsbeviser")
+    Component(certificateRepository, "Certificate Repository", "Repository", "Håndterer API kald til backend")
+}
+
+' ' Eksterne systemer
+Component_Ext(notification_ext, "Firebase Cloud Messaging", "External", "Håndterer notifikationer til brugere")
+Component_Ext(firebaseAuth_ext, "Firebase Authentication", "External", "Håndterer brugergodkendelse")
+Component_Ext(mitid_ext, "MitID", "External", "Håndterer brugergodkendelse")
+Component_Ext(api, "Backend API", "External", "API til backend")
+
+' ' Relationer mellem komponenter i appen
+Rel(user, login, "Logger ind via")
+Rel(user, register, "Registrerer sig via")
+Rel(user, settings, "Ændrer indstillinger via")
+Rel(user, bikeDetails, "Ser detaljer om cykler via")
+Rel(user, bikeCertificate, "Ser ejerskabsbeviser via")
+Rel(login, authController, "Håndterer login via")
+Rel(authController, userId, "Bruger brugerens ID")
+Rel(authController, authRepository, "Håndterer brugergodkendelse og registrering via")
+Rel(login, mitidController, "Håndterer førstegangslogin via")
+Rel(mitidController, mitidRepository, "Håndterer brugergodkendelse via")
+Rel(register, authController, "Håndterer registrering via")
+Rel(settings, notificationController, "Ændre notifikations præferencer via")
+Rel(notificationController, notificationRepository, "Håndterer notifikations præferencer via")
+Rel(bikeDetails, bikeController, "Håndterer cykeldata via")
+Rel(bikeController, bikeRepository, "Håndterer cykeldata og ejerskabsbevis via")
+Rel(bikeController, bikeModel, "Bruger cykelmodel")
+Rel(certificateController, certificate, "Bruger ejerskabsbevis model")
+Rel(bikeCertificate, certificateController, "Håndterer ejerskabsbeviser via")
+Rel(certificateController, certificateRepository, "Håndterer ejerskabsbeviser via")
+Rel(emailController, emailRepository, "Håndterer emails via")
+Rel(transferOwnsership, certificateController, "Overfører ejerskab via")
+Rel(recieveOwnership, certificateController, "Modtager ejerskab via")
+
+' ' Eksterne relationer
+Rel(authRepository, firebaseAuth_ext, "Håndterer brugergodkendelse via")
+Rel(mitidRepository, mitid_ext, "Håndterer brugergodkendelse via")
+Rel(notificationRepository, notification_ext, "Håndterer notifikationer via")
+Rel(bikeRepository, api, "Håndterer cykeldata og ejerskabsbeviser via")
+Rel(emailRepository, api, "Håndterer emails via")
+Rel(certificateRepository, api, "Håndterer ejerskabsbeviser via")
+
+
+
+
+
+@enduml
