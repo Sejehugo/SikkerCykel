@@ -1,0 +1,67 @@
+@startuml c4-niveau3-app-brugeradgang-kontohåndtering
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component Diagram for Initiativ "Brugeradgang og Kontohåndtering" - App view
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 15
+  defaultTextAlignment center
+  wrapWidth 180
+  maxMessageSize 100
+}
+
+' ' Aktør "Bruger" fra container diagrammet
+Person(user, "Bruger", "En bruger af SikkerCykel app'en. Har ejerskabsbevis over sine cykler.")
+
+System_Boundary(c1, "SikkerCykel App") {
+
+    Component(login, "Login Screen", "Widget", "Brugerens login-skærm")
+    Component(register, "Register Screen", "Widget", "Brugerens registreringsskærm")
+    Component(settings, "Settings Screen", "Widget", "Brugerens indstillinger")
+   
+
+    Component(userId, "User ID", "Data class", "Dataklasse for brugerens unikke ID")
+
+
+    Component(authController, "Auth Controller", "Controller", "Håndterer login, registrering og brugergodkendelse")
+    Component(emailController, "Email Controller", "Controller", "Håndterer emails")
+    Component(mitidController, "MitID Controller", "Controller", "Håndterer brugergodkendelse via MitID")
+
+
+    Component(authRepository, "Auth Repository", "Repository", "Håndterer API kald til firebase authentication")
+    Component(emailRepository, "Email Repository", "Repository", "Håndterer API kald til backends emailsystem")
+    Component(mitidRepository, "MitID Repository", "Repository", "Håndterer API kald til MitID systemet")
+}
+
+' ' Eksterne systemer
+Component_Ext(firebaseAuth_ext, "Firebase Authentication", "External", "Håndterer brugergodkendelse")
+Component_Ext(mitid_ext, "MitID", "External", "Håndterer brugergodkendelse")
+Component_Ext(api, "Backend API", "External", "API til backend")
+
+' ' Relationer mellem komponenter i appen
+Rel(user, login, "Logger ind")
+Rel(user, register, "Registrerer sig")
+Rel(user, settings, "Opdaterer password og sletter konto")
+Rel(settings, emailController, "Sender email ved password reset og sletning af konto")
+
+Rel(login, authController, "Håndterer login")
+Rel(authController, userId, "Bruger brugerens ID")
+Rel(authController, authRepository, "Håndterer brugergodkendelse og registrering")
+Rel(login, mitidController, "Håndterer førstegangslogin")
+Rel(mitidController, mitidRepository, "Håndterer brugergodkendelse")
+Rel(register, authController, "Håndterer registrering")
+Rel(emailController, emailRepository, "Send emails")
+
+
+' ' Eksterne relationer
+Rel(authRepository, firebaseAuth_ext, "Håndterer brugergodkendelse")
+Rel(mitidRepository, mitid_ext, "Håndterer brugergodkendelse")
+Rel(emailRepository, api, "Send emails")
+
+
+
+
+
+@enduml
