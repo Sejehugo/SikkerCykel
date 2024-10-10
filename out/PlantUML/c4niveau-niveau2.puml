@@ -70,10 +70,10 @@ skinparam rectangle<<GrayBox>> {
   shadowing false
 }
 
-person "==Cykelejer\n<size:10>[Person]</size>\n\nEn cykelejer af SikkerCykel app'en har ejerskabsbevis for sine cykler." <<User>> as Bruger
+person "==Cykelejer\n<size:10>[Person]</size>\n\nEn cykelejer af SikkerCykel app'en har ejerskabsbevis for sine cykler og kan administrere status, billeder og farve." <<User>> as Cykelejer
 
 System_Boundary(c1, "SikkerCykel System") {
-    Container(app, "SikkerCykel App", "Container: Flutter", "Leverer funktionalitet til registrering og administration af cykler via mobil app")
+    Container(app, "SikkerCykel App", "Container: Flutter", "Leverer funktionalitet til registrering og administration af cykler")
     Container(api, "SikkerCykel API", "Container: ASP.NET CORE", "Håndterer al kommunikation mellem klienten og systemets database og eksterne tjenester via JSON/HTTPS")
     ContainerDb(database, "SikkerCykel Register", "Container: Postgresql", "Database der gemmer cykeldata, ejerskabsinformation, og brugerinformation")
 }
@@ -83,7 +83,7 @@ rectangle "==Authentication\n<size:10>[Software system]</size>\n\nHåndterer bru
 rectangle "==Notifikationssystem\n<size:10>[Software System]</size>\n\nHåndterer notifikationer til brugere om cykelstatus, ejerskabshændelser etc." <<GrayBox>> as Notifikation
 rectangle "==DM-kode\n<size:10>[Identification]</size>\n\nGemmer data, som kan læses af systemet.\nMuliggør identifikation af cyklen ved scanning" <<GrayBox>> as DMKodeIngraveretICykel
 
-Bruger ..> app: " Administrere cykler via"
+Cykelejer ..> app: " Administrere cykler via"
 app ..> api: " Sender anmodninger via\n[JSON/HTTPS]"
 api ..> Notifikation: " Sender notifikation ved scanning af DM-kode, ejerskabshændelser etc. via"
 api ..> Authentication: " Autentificerer brugeren via"

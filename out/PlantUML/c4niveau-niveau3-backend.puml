@@ -1,7 +1,7 @@
 @startuml c4niveau-niveau3-backend
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title Component Diagram for SikkerCykel App
+title Component Diagram for SikkerCykel Backend
 
 top to bottom direction
 
@@ -14,22 +14,10 @@ skinparam {
 
 hide stereotype
 
-skinparam person<<SystemAdminstrator>> {
-  BackgroundColor #lightgrey
-  FontColor #black
-  BorderColor #052e56
-  shadowing false
-}
-skinparam person<<AnonymousUser>> {
+skinparam person<<User>> {
   BackgroundColor #08427b
   FontColor #ffffff
   BorderColor #052e56
-  shadowing false
-}
-skinparam rectangle<<ExternalSystem>> {
-  BackgroundColor #1168bd
-  FontColor #ffffff
-  BorderColor #0b4884
   shadowing false
 }
 skinparam rectangle<<SikkerCykelSystem>> {
@@ -38,13 +26,6 @@ skinparam rectangle<<SikkerCykelSystem>> {
   BorderColor #0b4884
   shadowing false
 }
-skinparam person<<User>> {
-  BackgroundColor #08427b
-  FontColor #ffffff
-  BorderColor #052e56
-  shadowing false
-}
-
 skinparam rectangle<<GrayBox>> {
   BackgroundColor #707070
   FontColor #ffffff
@@ -52,33 +33,42 @@ skinparam rectangle<<GrayBox>> {
   shadowing false
 }
 
-Person(user, "Cykelejer", "En cykelejer af SikkerCykel Appen har ejerskabsbevis for sine cykler")
+person "==Cykelejer\n<size:10>[Person]</size>\n\nEn cykelejer af SikkerCykel app'en har ejerskabsbevis for sine cykler og kan administrere status, billeder og farve." <<User>> as Cykelejer
+Container(app, "SikkerCykel App", "Container: Flutter", "Leverer funktionalitet til registrering og administration af cykler")
 
-Container(ui, "Brugergrænseflade (UI)", "Flutter", "Grænseflade for cykelejer til at administrere cykler")
+System_Boundary(c1, "SikkerCykel API") {
+    Container(component_cykel, "Cykel Component", "Component: Business Logic", "Forretningslogik til at registrere, spore og administrere cykler")
+    ContainerDb(register, "SikkerCykel Register", "PostgreSQL", "Gemmer cykeldata, ejerskabsinformation og brugeroplysninger")
 
-System_Boundary(c1, "SikkerCykel System") {
-    Container(controller, "CykelController", "ASP.NET Core Controller", "Håndterer input fra UI og sender anmodninger til SikkerCykel API")
-    Container(service, "CykelService", "Service", "Forretningslogik til at registrere, spore og administrere cykler")
-    Container(email, "EmailService", "MailKit", "Sender emails ved ejerskabshændelser og kontoadministration")
-    Container(notification, "NotificationService", "Service", "Håndterer push-notifikationer, når DM-kode scannes")
+    Container(controller_cykel, "Bruger Controller", "Component: REST API Controller", "Håndterer cykelrelaterede anmodninger")
+    Container(controller_cykel, "Cykel Controller", "Component: REST API Controller", "Håndterer cykelrelaterede anmodninger")
+    Container(controller_email, "Ejerskabs Controller", "Component: REST API Controller", "Håndterer anmodninger om ejerskabsoverførelser")
+    Container(component_email, "Email Component", "Component: MailKit", "Sender emails ved ejerskabshændelser")
+    Container(controller_notification, "Notification Controller", "Component: REST API Controller", "Styrer anmodninger for notifikationer")
+    Container(component_notification, "Notification Component", "Component: SignalR", "Håndterer realtime notifikationer")
+
+
 }
 
-ContainerDb(register, "SikkerCykel Register", "PostgreSQL", "Gemmer cykeldata, ejerskabsinformation og brugeroplysninger")
-
 ' ' Eksterne systemer
-rectangle "==Emailsystem\n<size:10>[Eksternt system]</size>\n\nSender systemgenererede emails som nulstilling af adgangskoder" <<GrayBox>> as email_ext
-rectangle "==Notifikationssystem\n<size:10>[Eksternt system]</size>\n\nSender notifikationer til brugere om cykelstatus og ejerskabshændelser" <<GrayBox>> as notification_ext
+rectangle "==Emailsystem\n<size:10>[Software system]</size>\n\nSender systemgenererede emails om ejerskabshændelser" <<GrayBox>> as email_ext
+rectangle "==Notifikationssystem\n<size:10>[Software system]</size>\n\nSender notifikationer til brugere om fx cykelstatus og ejerskabshændelser" <<GrayBox>> as notification_ext
 
 ' ' Relationer mellem komponenter i appen
-Rel(user, ui, "Interagerer med via mobil app")
-Rel(ui, controller, "Sender input til")
-Rel(controller, service, "Kalder forretningslogik")
-Rel(service, register, "Læser/skriv data fra/til SikkerCykel Register")
-Rel(service, email, "Bruger til at sende ejerskabsmails")
-Rel(service, notification, "Bruger til at sende push-notifikationer")
+Rel(Cykelejer, app, "Interagerer med via mobil app")
 
-' ' Eksterne relationer
-Rel(email, email_ext, "Sender emails via")
-Rel(notification, notification_ext, "Sender notifikationer via")
+Rel(controller_cykel, component_cykel, "Bruger")
+Rel(component_cykel, register, "Læser fra og skriver til", "SQL")
+Rel(app, controller_cykel, "Udfører operationer relaterede til cykler")
+
+Rel(app, controller_email, "Udfører ejerskabsændring til")
+Rel(controller_email, component_email, "Bruger")
+Rel(component_email, email_ext, "Sender emails via")
+
+Rel(controller_email, controller_notification, "Bruger")
+Rel(controller_cykel, controller_notification, "Bruger")
+
+Rel(controller_notification, component_notification, "Bruger")
+Rel(component_notification, notification_ext, "Sender notifikationer via")
 
 @enduml
