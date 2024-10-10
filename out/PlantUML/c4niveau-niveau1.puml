@@ -69,20 +69,20 @@ skinparam rectangle<<GrayBox>> {
   shadowing false
 }
 
-person "==Bruger\n<size:10>[Person]</size>\n\nEn bruger af SikkerCykel app'en. Har ejerskabsbevis over sine cykler." <<User>> as Bruger
+person "==Cykelejer\n<size:10>[Person]</size>\n\nEn cykelejer af SikkerCykel app'en har ejerskabsbevis for sine cykler og kan administrere status, billeder og farve." <<User>> as Bruger
 
-rectangle "==SikkerCykel System\n<size:10>[Software System]</size>\n\nOpbevarer cykel- og brugeroplysninger.\nTilbyder kernefunktioner relaterede til dette." <<SikkerCykelSystem>> as SikkerCykelSystem
+rectangle "==SikkerCykel System\n<size:10>[Software System]</size>\n\nOpbevarer cykel- og brugeroplysninger.\nTilbyder kernefunktioner såsom ejerskabsoverførsel, generering af ejerskabsbeviser og cykelstatusadministration." <<SikkerCykelSystem>> as SikkerCykelSystem
 
-rectangle "==Emailsystem\n<size:10>[Software System]</size>\n\nSender emails til brugere.\nHåndterer systemgenererede emails som nulstilling af adgangskoder" <<GrayBox>> as Email
+rectangle "==Emailsystem\n<size:10>[Software System]</size>\n\nSender emails til brugere.\nHåndterer systemgenererede emails såsom nulstilling af adgangskoder" <<GrayBox>> as Email
 rectangle "==Authentication\n<size:10>[Software system]</size>\n\nHåndterer brugergodkendelse via email og tredjepartsudbydere, såsom Google og MitID" <<GrayBox>> as Authentication
-rectangle "==QR-kode\n<size:10>[Identifikation]</size>\n\nGemmer data, som kan læses af systemet.\nMuliggør identifikation af cyklen via QR-scanning" <<GrayBox>> as QRKodeIngraveretICykel
+rectangle "==DM-kode\n<size:10>[Identifikation]</size>\n\nGemmer data, som kan læses af systemet.\nMuliggør visning af cykeloplysninger og status ved DM-scanning." <<GrayBox>> as DMKodeIngraveretICykel
 rectangle "==Notifikationssystem\n<size:10>[Software System]</size>\n\nHåndterer notifikationer til brugere om cykelstatus, ejerskabshændelser etc." <<GrayBox>> as Notifikation
 
 Bruger .[#707070,thickness=2].> SikkerCykelSystem : "<color:#707070> Administrere cykler via"
 SikkerCykelSystem .[#707070,thickness=2].> Authentication : "<color:#707070> Autentificerer brugeren via"
 SikkerCykelSystem .[#707070,thickness=2].> Email : "<color:#707070> Sender e-mails fra"
 SikkerCykelSystem .[#707070,thickness=2].> Notifikation : "<color:#707070> Sender notifikationer fra"
-SikkerCykelSystem .[#707070,thickness=2].> QRKodeIngraveretICykel : "<color:#707070> Læser data fra"
+SikkerCykelSystem .[#707070,thickness=2].> DMKodeIngraveretICykel : "<color:#707070> Bruger til at åbne op"
 Email .[#707070,thickness=2].> Bruger: "<color:#707070> Sender e-mails til"
 Notifikation .[#707070,thickness=2].> Bruger: "<color:#707070> Sender notifikationer til"
 

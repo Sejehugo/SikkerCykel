@@ -63,7 +63,6 @@ skinparam person<<BicycleDealer>> {
   shadowing false
 }
 
-' ' Grå bokse til Emailsystem, Firebase, Google Login og NFC-chip
 skinparam rectangle<<GrayBox>> {
   BackgroundColor #707070
   FontColor #ffffff
@@ -71,29 +70,25 @@ skinparam rectangle<<GrayBox>> {
   shadowing false
 }
 
-person "==Bruger\n<size:10>[Person]</size>\n\nEn bruger af SikkerCykel app'en. Har ejerskabsbevis over sine cykler." <<User>> as Bruger
+person "==Cykelejer\n<size:10>[Person]</size>\n\nEn cykelejer af SikkerCykel app'en har ejerskabsbevis for sine cykler." <<User>> as Bruger
 
 System_Boundary(c1, "SikkerCykel System") {
-    Container(app, "SikkerCykel App", "", "Leverer funktionalitet til registrering og administration af cykler via mobil app")
-    Container(api, "SikkerCykel API", "", "Håndterer al kommunikation mellem klienten og systemets database via JSON/HTTPS")
-    ContainerDb(database, "SikkerCykel Database", "", "Gemmer cykeldata og dertilhørende ejerskabsbevis")
+    Container(app, "SikkerCykel App", "Container: Flutter", "Leverer funktionalitet til registrering og administration af cykler via mobil app")
+    Container(api, "SikkerCykel API", "Container: ASP.NET CORE", "Håndterer al kommunikation mellem klienten og systemets database og eksterne tjenester via JSON/HTTPS")
+    ContainerDb(database, "SikkerCykel Register", "Container: Postgresql", "Database der gemmer cykeldata, ejerskabsinformation, og brugerinformation")
 }
 
-' ' Eksterne systemer til venstre
 rectangle "==Emailsystem\n<size:10>[Software System]</size>\n\nSender emails til brugere.\nHåndterer systemgenererede emails som nulstilling af adgangskoder" <<GrayBox>> as Email
 rectangle "==Authentication\n<size:10>[Software system]</size>\n\nHåndterer brugergodkendelse via email og tredjepartsudbydere, såsom Google og MitID" <<GrayBox>> as Authentication
-
-' ' Eksterne systemer til højre
 rectangle "==Notifikationssystem\n<size:10>[Software System]</size>\n\nHåndterer notifikationer til brugere om cykelstatus, ejerskabshændelser etc." <<GrayBox>> as Notifikation
-rectangle "==QR-kode\n<size:10>[Identification]</size>\n\nGemmer data, som kan læses af systemet.\nMuliggør identifikation af cyklen via QR-scanning" <<GrayBox>> as QRKodeIngraveretICykel
+rectangle "==DM-kode\n<size:10>[Identification]</size>\n\nGemmer data, som kan læses af systemet.\nMuliggør identifikation af cyklen ved scanning" <<GrayBox>> as DMKodeIngraveretICykel
 
-' ' Relationer mellem brugere og systemet
 Bruger ..> app: " Administrere cykler via"
 app ..> api: " Sender anmodninger via\n[JSON/HTTPS]"
-api ..> Notifikation: " Sender notifikationer via"
-api ..> Authentication: " Authentificerer brugeren via"
-api .left.> database: " Henter data fra"
-api ..> QRKodeIngraveretICykel: " Læser data fra"
+api ..> Notifikation: " Sender notifikation ved scanning af DM-kode, ejerskabshændelser etc. via"
+api ..> Authentication: " Autentificerer brugeren via"
+api .left.> database: " Henter data fra register"
+api ..> DMKodeIngraveretICykel: " Læser data fra"
 api ..> Email: " Sender e-mails via"
 
 @enduml

@@ -12,43 +12,73 @@ skinparam {
   maxMessageSize 100
 }
 
-' ' Aktør "Bruger" fra container diagrammet
-Person(user, "Bruger", "En bruger af SikkerCykel Appen")
+hide stereotype
 
-System_Boundary(c1, "SikkerCykel App") {
-
-    Component(ui, "Brugergrænseflade (UI)", "Mobile", "Grænseflade for bruger til at administrere cykler")
-    Component(controller, "CykelController", "Controller", "Håndterer input fra UI og sender anmodninger til API")
-    Component(service, "CykelService", "Service", "Forretningslogik til at registrere, spore og administrere cykler")
-    Component(nfc, "NFC Scanner", "Komponent", "Interagerer med NFC tags for at identificere cykler")
-    Component(email, "EmailService", "Service", "Sender emails til brugere ved ejerskabshændelser")
-    Component(notification, "NotificationService", "Service", "Håndterer push-notifikationer om cykelstatus")
-
-    ContainerDb(database, "SikkerCykel Database", "SQL Database", "Gemmer cykeldata, brugerkonti og ejerskabsposter")
-
+skinparam person<<SystemAdminstrator>> {
+  BackgroundColor #lightgrey
+  FontColor #black
+  BorderColor #052e56
+  shadowing false
+}
+skinparam person<<AnonymousUser>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
+}
+skinparam rectangle<<ExternalSystem>> {
+  BackgroundColor #1168bd
+  FontColor #ffffff
+  BorderColor #0b4884
+  shadowing false
+}
+skinparam rectangle<<SikkerCykelSystem>> {
+  BackgroundColor #1168bd
+  FontColor #ffffff
+  BorderColor #0b4884
+  shadowing false
+}
+skinparam person<<User>> {
+  BackgroundColor #08427b
+  FontColor #ffffff
+  BorderColor #052e56
+  shadowing false
 }
 
+skinparam rectangle<<GrayBox>> {
+  BackgroundColor #707070
+  FontColor #ffffff
+  BorderColor #505050
+  shadowing false
+}
+
+Person(user, "Cykelejer", "En cykelejer af SikkerCykel Appen har ejerskabsbevis for sine cykler")
+
+Container(ui, "Brugergrænseflade (UI)", "Flutter", "Grænseflade for cykelejer til at administrere cykler")
+
+System_Boundary(c1, "SikkerCykel System") {
+    Container(controller, "CykelController", "ASP.NET Core Controller", "Håndterer input fra UI og sender anmodninger til SikkerCykel API")
+    Container(service, "CykelService", "Service", "Forretningslogik til at registrere, spore og administrere cykler")
+    Container(email, "EmailService", "MailKit", "Sender emails ved ejerskabshændelser og kontoadministration")
+    Container(notification, "NotificationService", "Service", "Håndterer push-notifikationer, når DM-kode scannes")
+}
+
+ContainerDb(register, "SikkerCykel Register", "PostgreSQL", "Gemmer cykeldata, ejerskabsinformation og brugeroplysninger")
+
 ' ' Eksterne systemer
-Component_Ext(email_ext, "Emailsystem", "Eksternt system", "Sender systemgenererede emails")
-Component_Ext(notification_ext, "Notifikationssystem", "Eksternt system", "Håndterer notifikationer til brugere")
-Component_Ext(auth_ext, "Authentication", "Eksternt system", "Håndterer brugergodkendelse")
-Component_Ext(nfc_ext, "NFC-tag", "Hardware", "NFC-klistermærke til cykelidentifikation")
-Component_Ext(mitid_ext, "MitID", "Eksternt system", "Brugergodkendelse for at sikre brugerens identitet")
+rectangle "==Emailsystem\n<size:10>[Eksternt system]</size>\n\nSender systemgenererede emails som nulstilling af adgangskoder" <<GrayBox>> as email_ext
+rectangle "==Notifikationssystem\n<size:10>[Eksternt system]</size>\n\nSender notifikationer til brugere om cykelstatus og ejerskabshændelser" <<GrayBox>> as notification_ext
 
 ' ' Relationer mellem komponenter i appen
-Rel(user, ui, "Interagerer med via mobil eller web")
+Rel(user, ui, "Interagerer med via mobil app")
 Rel(ui, controller, "Sender input til")
 Rel(controller, service, "Kalder forretningslogik")
-Rel(service, database, "Læser/skriv cykeldata fra/til")
-Rel(service, nfc, "Interagerer med for scanning")
-Rel(service, email, "Sender ejerskabsmails via")
-Rel(service, notification, "Sender push-notifikationer via")
+Rel(service, register, "Læser/skriv data fra/til SikkerCykel Register")
+Rel(service, email, "Bruger til at sende ejerskabsmails")
+Rel(service, notification, "Bruger til at sende push-notifikationer")
 
 ' ' Eksterne relationer
 Rel(email, email_ext, "Sender emails via")
 Rel(notification, notification_ext, "Sender notifikationer via")
-Rel(service, auth_ext, "Bruger til godkendelse")
-Rel(nfc, nfc_ext, "Læser data fra NFC-tags")
-Rel(auth_ext, mitid_ext, "MitID til bruger godkendelse")
 
 @enduml
